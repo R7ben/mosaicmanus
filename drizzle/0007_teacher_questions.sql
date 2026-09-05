@@ -10,9 +10,9 @@ CREATE TABLE `teacherQuestions` (
   `optionC` text NOT NULL,
   `optionD` text NOT NULL,
   `correctOption` enum('A','B','C','D') NOT NULL,
-  `misconceptionHints` json DEFAULT ('{}'),
+	`misconceptionHints` json,
   `isActive` boolean NOT NULL DEFAULT true,
-  `createdAt` timestamp NOT NULL DEFAULT (now()),
+	`createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT `teacherQuestions_id` PRIMARY KEY(`id`),
   CONSTRAINT `teacherQuestions_teacherId_users_id_fk` FOREIGN KEY (`teacherId`) REFERENCES `users`(`id`) ON DELETE CASCADE,
   CONSTRAINT `teacherQuestions_classroomId_classrooms_id_fk` FOREIGN KEY (`classroomId`) REFERENCES `classrooms`(`id`) ON DELETE CASCADE

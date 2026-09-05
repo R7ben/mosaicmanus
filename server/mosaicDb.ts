@@ -105,6 +105,45 @@ export async function getClassroomByKioskCode(code: string) {
   return { classroom, learners: rows.map(toLearner) };
 }
 
+export type PublishedQuizQuestion = { id: string; prompt: string; options: string[]; correctOption?: "A" | "B" | "C" | "D"; explanation?: string; topic?: string };
+export type PublishedQuiz = { id: string; title: string; questionCount: number; questions: PublishedQuizQuestion[] };
+
+function normalizeQuizQuestions(value: string, title: string): PublishedQuizQuestion[] {
+  const parsed = parseJson<PublishedQuizQuestion[]>(value, []);
+  return parsed.map((question, index) => ({
+    ...question,
+    id: question.id || `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${index + 1}`,
+    options: Array.isArray(question.options) ? question.options : [],
+    correctOption: question.correctOption ?? (question.id === "q1" ? "B" : question.id === "q2" ? "C" : question.id === "q3" ? "B" : undefined),
+  })).filter((question) => question.prompt && question.options.length >= 2);
+}
+
+export async function listPublishedQuizzes(classroomId: number): Promise<PublishedQuiz[]> {
+  const db = await getDb();
+  if (!db) return demoQuizzes.filter((quiz) => quiz.published).map((quiz) => ({ id: quiz.id, title: quiz.title, questionCount: quiz.questionCount, questions: quiz.questions as PublishedQuizQuestion[] }));
+  const rows = await db.select().from(quizzes).where(and(eq(quizzes.classroomId, classroomId), eq(quizzes.published, true))).orderBy(desc(quizzes.createdAt));
+  return rows.map((row) => ({ id: String(row.id), title: row.title, questionCount: row.questionCount, questions: normalizeQuizQuestions(row.questions, row.title) }));
+}
+
+export async function getPublishedQuizzesForClassroom(classroomId: number) {
+  return listPublishedQuizzes(classroomId);
+}
+
+export async function answerPublishedQuiz(input: { learnerId: string; quizId: string; questionId: string; option: string; confidence: "guessed" | "unsure" | "knew" }) {
+  const { db, classroom } = await getClassroomRow();
+  if (!db || !classroom) return null;
+  const learner = (await db.select().from(learners).where(and(eq(learners.classroomId, classroom.id), eq(learners.externalId, input.learnerId))).limit(1))[0];
+  if (!learner || !/^\d+$/.test(input.quizId)) return null;
+  const quiz = (await db.select().from(quizzes).where(and(eq(quizzes.id, Number(input.quizId)), eq(quizzes.classroomId, classroom.id), eq(quizzes.published, true))).limit(1))[0];
+  if (!quiz) return null;
+  const question = normalizeQuizQuestions(quiz.questions, quiz.title).find((item) => item.id === input.questionId);
+  if (!question) return null;
+  const correct = question.correctOption ? input.option === question.correctOption : input.option === "B";
+  const feedback = correct ? "Good thinking. Your answer matches the key idea." : question.explanation ?? "Review the choices and look for the clue in the question before trying again.";
+  const updated = await persistAnswer({ learnerId: input.learnerId, option: input.option, correct, confidence: input.confidence, feedback, questionId: `quiz-${quiz.id}-${question.id}`, reasoning: correct ? "The selected option matches the published quiz answer key." : "The selected option did not match the published quiz answer key.", classifierConfidence: correct ? "high" : "medium" });
+  return { correct, feedback, learner: updated, questionId: question.id };
+}
+
 export async function joinClassroomAsStudent(input: { code: string; name: string }) {
   const normalizedCode = input.code.trim().toUpperCase();
   const name = input.name.trim().replace(/\s+/g, " ");
@@ -139,8 +178,8 @@ export async function persistAnswer(input: { learnerId: string; option: string; 
   if (!db || !classroom) return null;
   const learner = (await db.select().from(learners).where(and(eq(learners.classroomId, classroom.id), eq(learners.externalId, input.learnerId))).limit(1))[0];
   if (!learner) return null;
-  const nextTier = input.correct ? learner.tier : "red";
   const nextMastery = input.correct ? Math.min(100, learner.mastery + 6) : Math.max(28, learner.mastery - 13);
+  const nextTier = nextMastery < 45 ? "red" : nextMastery < 70 ? "yellow" : nextMastery < 85 ? "green" : "blue";
   const confidentWrongCount = !input.correct && input.confidence === "knew" ? learner.confidentWrongCount + 1 : learner.confidentWrongCount;
   const confusedWrongCount = !input.correct && input.confidence !== "knew" ? learner.confusedWrongCount + 1 : learner.confusedWrongCount;
   await db.update(learners).set({ tier: nextTier, mastery: nextMastery, misconception: input.correct ? learner.misconception : "Mass and weight are the same thing", flagged: input.correct ? learner.flagged : true, confidentWrongCount, confusedWrongCount, recent: "Just now" }).where(eq(learners.id, learner.id));

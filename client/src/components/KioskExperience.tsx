@@ -20,7 +20,7 @@ function exitKiosk(event: MouseEvent<HTMLAnchorElement>) {
 }
 
 function ConfidenceButtons({ value, onChange }: { value: Confidence; onChange: (value: Confidence) => void }) {
-  const choices: { id: Confidence; label: string }[] = [{ id: "guessed", label: "I guessed" }, { id: "unsure", label: "Not sure" }, { id: "knew", label: "I knew this" }];
+  const choices: { id: Confidence; label: string }[] = [{ id: "guessed", label: "I guessed" }, { id: "unsure", label: "Unsure" }, { id: "knew", label: "I knew this" }];
   return <div className="confidence-buttons">{choices.map((choice) => <button type="button" key={choice.id} className={value === choice.id ? "confidence-buttons__active" : ""} onClick={() => onChange(choice.id)}>{choice.label}</button>)}</div>;
 }
 

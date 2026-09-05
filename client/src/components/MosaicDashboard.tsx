@@ -29,7 +29,6 @@ const teacherSidebarNavigation = [
   { id: "students", label: "Students", description: "Inspect learners, tiers, and student progress.", icon: UsersRound, view: "cohort" },
   { id: "quizzes", label: "Quizzes", description: "View, manage, and publish classroom quizzes.", icon: BookOpenCheck, href: "/teacher/quiz" },
   { id: "assignments", label: "Assignments", description: "Manage and review student assignments.", icon: BookOpenCheck, href: "/educator" },
-  { id: "attendance", label: "Attendance", description: "Monitor class participation and live check-ins.", icon: Wifi, href: "/teacher" },
   { id: "analytics", label: "Analytics", description: "View performance insights and learning progress.", icon: BarChart3, view: "heatmap" },
   { id: "resources", label: "Resources", description: "Open lesson materials, scans, and answer slips.", icon: Download, href: "/teacher/quiz" },
   { id: "settings", label: "Settings", description: "Manage class details, access, and kiosk settings.", icon: CircleHelp, href: "/teacher/class" },

@@ -18,7 +18,6 @@ import CreateQuizPage from "./pages/CreateQuizPage";
 import StudentQuizReview from "./pages/StudentQuizReview";
 import QuizHubPage from "./pages/QuizHubPage";
 import ClassDetailsPage from "./pages/ClassDetailsPage";
-import TeacherResourcesPage from "./pages/TeacherResourcesPage";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
 function SessionRedirector() {
@@ -43,7 +42,6 @@ function Router() {
     <Route path="/teacher/quiz/create" component={CreateQuizPage} />
     <Route path="/teacher/quiz" component={QuizHubPage} />
     <Route path="/teacher/class" component={ClassDetailsPage} />
-    <Route path="/teacher/resources" component={TeacherResourcesPage} />
     <Route path="/login/educator"><RoleLoginPage role="educator" /></Route>
     <Route path="/login/tutor"><RoleLoginPage role="tutor" /></Route>
     <Route path="/login/student"><RoleLoginPage role="student" /></Route>

@@ -7,6 +7,10 @@ export const users = mysqlTable("users", {
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "admin", "educator", "tutor", "student"]).default("user").notNull(),
+  // Bumped to invalidate every session token already issued for this user
+  // (e.g. on logout or a forced sign-out), since JWTs are otherwise valid
+  // until they expire regardless of the cookie being cleared.
+  sessionVersion: int("sessionVersion").notNull().default(0),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),

@@ -57,6 +57,13 @@
       "when": 1788612824350,
       "tag": "0007_teacher_questions",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1788634006555,
+      "tag": "0008_add_user_session_version",
+      "breakpoints": true
     }
   ]
 }

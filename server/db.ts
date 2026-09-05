@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, User, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
@@ -33,6 +33,7 @@ function upsertUserInMemory(user: InsertUser): void {
     email: user.email ?? existing?.email ?? null,
     loginMethod: user.loginMethod ?? existing?.loginMethod ?? null,
     role: user.role ?? existing?.role ?? "user",
+    sessionVersion: existing?.sessionVersion ?? 0,
     createdAt: existing?.createdAt ?? new Date(),
     updatedAt: new Date(),
     lastSignedIn: user.lastSignedIn ?? existing?.lastSignedIn ?? new Date(),
@@ -108,6 +109,32 @@ export async function getUserByOpenId(openId: string) {
   const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
 
   return result.length > 0 ? result[0] : undefined;
+}
+
+// Invalidates every previously issued session token for this user by
+// bumping the version embedded in the JWT; verifySession rejects a token
+// whose sessionVersion no longer matches the row. Returns the new version.
+export async function bumpSessionVersion(openId: string): Promise<number> {
+  const db = await getDb();
+  if (!db) {
+    const existing = memoryUsers.get(openId);
+    const nextVersion = (existing?.sessionVersion ?? 0) + 1;
+    if (existing) memoryUsers.set(openId, { ...existing, sessionVersion: nextVersion });
+    return nextVersion;
+  }
+
+  await db
+    .update(users)
+    .set({ sessionVersion: sql`${users.sessionVersion} + 1` })
+    .where(eq(users.openId, openId));
+
+  const [row] = await db
+    .select({ sessionVersion: users.sessionVersion })
+    .from(users)
+    .where(eq(users.openId, openId))
+    .limit(1);
+
+  return row?.sessionVersion ?? 0;
 }
 
 // TODO: add feature queries here as your schema grows.

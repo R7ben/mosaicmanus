@@ -96,12 +96,33 @@ export async function getDemoClassroom(): Promise<{ classroom: ClassroomRow | nu
 
 export async function getClassroomByKioskCode(code: string) {
   await ensureMosaicData();
+  const normalized = code.trim().toUpperCase();
   const db = await getDb();
-  if (!db) return null;
-  const classroom = (await db.select().from(classrooms).where(eq(classrooms.kioskCode, code)).limit(1))[0] ?? null;
+  if (!db) return normalized === CLASSROOM.kioskCode ? { classroom: CLASSROOM, learners: DEMO_LEARNERS } : null;
+  const classroom = (await db.select().from(classrooms).where(eq(classrooms.kioskCode, normalized)).limit(1))[0] ?? null;
   if (!classroom) return null;
   const rows = await db.select().from(learners).where(eq(learners.classroomId, classroom.id)).orderBy(asc(learners.id));
   return { classroom, learners: rows.map(toLearner) };
+}
+
+export async function joinClassroomAsStudent(input: { code: string; name: string }) {
+  const normalizedCode = input.code.trim().toUpperCase();
+  const name = input.name.trim().replace(/\s+/g, " ");
+  if (name.length < 2) return { success: false as const, reason: "invalid_name" as const, message: "Enter your name to join this class." };
+  const current = await getClassroomByKioskCode(normalizedCode);
+  if (!current) return { success: false as const, reason: "invalid_code" as const, message: "Invalid class code. Check the code with your teacher and try again." };
+  const existing = current.learners.find((learner) => learner.name.trim().toLowerCase() === name.toLowerCase());
+  if (existing) return { success: false as const, reason: "already_joined" as const, message: "You have already joined this class. Choose your name from the class list.", learner: existing };
+  const db = await getDb();
+  const classroomId = typeof current.classroom.id === "number" ? current.classroom.id : null;
+  if (!db || classroomId === null) {
+    const initials = name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase();
+    return { success: true as const, classroom: current.classroom, learner: { id: `guest-${Date.now()}`, name, initials, tier: "green" as const, mastery: 0, flagged: false, confidentWrongCount: 0, confusedWrongCount: 0, clearedAt: null, recent: "Just joined" } };
+  }
+  const row = await db.insert(learners).values({ classroomId, externalId: `student-${Date.now()}`, name, initials: name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase(), tier: "green", mastery: 0, recent: "Just joined" }).$returningId();
+  const learnerId = row[0]?.id;
+  const created = learnerId ? (await db.select().from(learners).where(eq(learners.id, learnerId)).limit(1))[0] : null;
+  return created ? { success: true as const, classroom: current.classroom, learner: toLearner(created) } : { success: false as const, reason: "join_failed" as const, message: "We could not add you to the class. Please try again." };
 }
 
 export async function getLearnerProfile(externalId: string) {

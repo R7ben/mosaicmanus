@@ -1,0 +1,35 @@
+# Project TODO
+
+- [x] Port the existing Mosaic Classroom teacher/student entry experience into the persistent Manus project
+- [x] Preserve classroom flows and navigation from the existing application
+- [x] Preserve the existing visual language while refining it into an elegant, production-ready experience
+- [x] Configure Manus-hosted authentication and production runtime integration
+- [x] Preserve and validate server APIs and database-backed project infrastructure
+- [x] Add or preserve Vitest coverage for the ported application behavior
+- [x] Run build, typecheck, and test validation in the persistent project
+- [x] Verify the main experience in a live browser preview
+- [x] Create a final publish-ready checkpoint for the persistent Manus website
+- [x] Publish the website from the Manus Management UI and verify the production URL
+- [x] Review the ported UI in the persistent project, refine styling and polish where needed, and verify the elegant production-ready experience in a live browser session.
+- [x] Fix missing popover theme variables so tooltip backgrounds and foregrounds render with solid readable contrast
+- [x] Verify Tailwind popover color mapping and inspect all tooltip consumers across the app
+- [x] Re-test tooltip anchoring and positioning across navigation and icon controls
+- [x] Run regression validation and save a corrected project checkpoint
+- [x] Reproduce the quiz question save failure in the quiz section
+- [x] Trace the question editor, mutation/API, and database persistence path
+- [x] Fix question saving and preserve validation/error feedback
+- [x] Verify a saved question persists after reload and passes regression tests
+- [x] Save a corrected quiz-save checkpoint
+- [x] Reproduce the kiosk exit button failure in the live kiosk experience
+- [x] Trace kiosk navigation, fullscreen state, and exit-button event handling
+- [x] Fix kiosk exit so it reliably leaves kiosk mode and returns to the intended page
+- [x] Verify kiosk exit across authenticated and public kiosk flows
+- [x] Save a corrected kiosk-exit checkpoint
+- [x] Verify Exit kiosk from the verified class/join state and active student quiz state
+- [x] Verify Exit kiosk exits browser fullscreen before navigating to the landing page
+- [x] Review the Canva project brief and extract the README facts
+- [x] Create a comprehensive README with overview, features, problem-solution fit, and future improvements
+- [x] Validate the README against the current Mosaic Classroom implementation
+- [ ] Inspect the newest local changes and GitHub remote state
+- [ ] Commit and push the newest Mosaic Classroom edits to GitHub
+- [ ] Verify the remote branch contains the pushed commit

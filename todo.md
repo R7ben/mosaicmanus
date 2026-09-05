@@ -51,5 +51,5 @@
 - [x] Click the Student login link from the edited local educator workspace and confirm it reaches the intended student login page
 - [x] Re-run the full end-to-end educator workspace header verification from the edited local page: brand link, Student login link, Create quiz open/close, and one additional core action
 - [x] Inspect the latest checkpoint and GitHub working tree
-- [ ] Commit and push the latest educator workspace changes to GitHub
-- [ ] Verify the remote branch contains the pushed commit
+- [x] Commit and push the latest educator workspace changes to GitHub
+- [x] Verify the remote branch contains the pushed commit

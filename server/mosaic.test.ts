@@ -29,7 +29,7 @@ describe("mosaic classroom contracts", () => {
 
     expect(valid.valid).toBe(true);
     if (valid.valid) expect(valid.learners).toHaveLength(20);
-    expect(invalid).toEqual({ valid: false, message: "That class code does not match this classroom." });
+    expect(invalid).toEqual({ valid: false, reason: "invalid_code", message: "Invalid class code. Check the code with your teacher and try again." });
   });
 
   it("returns a student dashboard with a three-domain mastery map", async () => {

@@ -38,5 +38,18 @@
 - [x] Verify the dashboard layout at desktop and mobile widths
 - [x] Save a corrected dashboard-navigation checkpoint
 - [x] Inspect the latest dashboard checkpoint changes and GitHub remote state
-- [x] Confirm the latest dashboard navigation changes are present on GitHub
-- [x] Verify the local checkout matches the GitHub remote commit
+- [x] Push the latest dashboard navigation changes to GitHub
+- [x] Verify the GitHub remote contains the latest pushed commit
+- [x] Inspect the educator workspace markup and identify the anchor referenced by the visual edit
+- [x] Remove the intended anchor while preserving educator workspace navigation and actions
+- [x] Verify the educator workspace layout and interactions
+- [x] Save a corrected educator workspace checkpoint
+- [x] Exercise the educator workspace interactions after the header edit: brand navigation, Create quiz, Student login, and key page actions
+- [x] Save a new project checkpoint for the educator workspace header change after interaction verification
+- [x] Click the retained brand link from the edited local educator workspace and confirm it reaches the intended teacher/dashboard destination
+- [x] Re-verify the edited educator workspace interactions end-to-end after the header change, including Student login, Create quiz open/close, and at least one additional core page action
+- [x] Click the Student login link from the edited local educator workspace and confirm it reaches the intended student login page
+- [x] Re-run the full end-to-end educator workspace header verification from the edited local page: brand link, Student login link, Create quiz open/close, and one additional core action
+- [x] Inspect the latest checkpoint and GitHub working tree
+- [ ] Commit and push the latest educator workspace changes to GitHub
+- [ ] Verify the remote branch contains the pushed commit

@@ -27,6 +27,7 @@ const teacherSidebarNavigation = [
   { id: "dashboard", label: "Dashboard", description: "See the class-wide learning picture and next action.", icon: Grid2X2, view: "overview" },
   { id: "classes", label: "Classes", description: "View class code, students, and assigned quizzes.", icon: UsersRound, href: "/teacher/class" },
   { id: "students", label: "Students", description: "Inspect learners, tiers, and student progress.", icon: UsersRound, view: "cohort" },
+  { id: "groups", label: "Learning groups", description: "Plan targeted support for each learning group.", icon: BookOpenCheck, view: "groups" },
   { id: "quizzes", label: "Quizzes", description: "View, manage, and publish classroom quizzes.", icon: BookOpenCheck, href: "/teacher/quiz" },
   { id: "assignments", label: "Assignments", description: "Manage and review student assignments.", icon: BookOpenCheck, href: "/educator" },
   { id: "analytics", label: "Analytics", description: "View performance insights and learning progress.", icon: BarChart3, view: "heatmap" },

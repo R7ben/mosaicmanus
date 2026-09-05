@@ -30,6 +30,6 @@
 - [x] Review the Canva project brief and extract the README facts
 - [x] Create a comprehensive README with overview, features, problem-solution fit, and future improvements
 - [x] Validate the README against the current Mosaic Classroom implementation
-- [ ] Inspect the newest local changes and GitHub remote state
-- [ ] Commit and push the newest Mosaic Classroom edits to GitHub
-- [ ] Verify the remote branch contains the pushed commit
+- [x] Inspect the newest local changes and GitHub remote state
+- [x] Commit and push the newest Mosaic Classroom edits to GitHub
+- [x] Verify the remote branch contains the pushed commit

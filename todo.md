@@ -33,3 +33,10 @@
 - [x] Inspect the newest local changes and GitHub remote state
 - [x] Commit and push the newest Mosaic Classroom edits to GitHub
 - [x] Verify the remote branch contains the pushed commit
+- [x] Inspect the dashboard navigation markup and identify the duplicate navigation referenced by the visual edit
+- [x] Remove the redundant navigation while preserving sidebar behavior and routes
+- [x] Verify the dashboard layout at desktop and mobile widths
+- [x] Save a corrected dashboard-navigation checkpoint
+- [ ] Inspect the latest dashboard checkpoint changes and GitHub remote state
+- [ ] Push the latest dashboard navigation changes to GitHub
+- [ ] Verify the GitHub remote contains the latest pushed commit

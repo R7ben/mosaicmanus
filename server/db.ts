@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, User, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -18,6 +18,28 @@ export async function getDb() {
   return _db;
 }
 
+// In-memory fallback so local dev (no DATABASE_URL) can still create/read
+// users, e.g. for the /api/dev-login bypass. Not used once a real DB connects.
+const memoryUsers = new Map<string, User>();
+let memoryUserId = 1;
+
+function upsertUserInMemory(user: InsertUser): void {
+  const openId = user.openId as string;
+  const existing = memoryUsers.get(openId);
+  const merged: User = {
+    id: existing?.id ?? memoryUserId++,
+    openId,
+    name: user.name ?? existing?.name ?? null,
+    email: user.email ?? existing?.email ?? null,
+    loginMethod: user.loginMethod ?? existing?.loginMethod ?? null,
+    role: user.role ?? existing?.role ?? "user",
+    createdAt: existing?.createdAt ?? new Date(),
+    updatedAt: new Date(),
+    lastSignedIn: user.lastSignedIn ?? existing?.lastSignedIn ?? new Date(),
+  };
+  memoryUsers.set(openId, merged);
+}
+
 export async function upsertUser(user: InsertUser): Promise<void> {
   if (!user.openId) {
     throw new Error("User openId is required for upsert");
@@ -25,7 +47,7 @@ export async function upsertUser(user: InsertUser): Promise<void> {
 
   const db = await getDb();
   if (!db) {
-    console.warn("[Database] Cannot upsert user: database not available");
+    upsertUserInMemory(user);
     return;
   }
 
@@ -80,8 +102,7 @@ export async function upsertUser(user: InsertUser): Promise<void> {
 export async function getUserByOpenId(openId: string) {
   const db = await getDb();
   if (!db) {
-    console.warn("[Database] Cannot get user: database not available");
-    return undefined;
+    return memoryUsers.get(openId);
   }
 
   const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);

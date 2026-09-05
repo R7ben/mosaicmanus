@@ -10,7 +10,42 @@ function getQueryParam(req: Request, key: string): string | undefined {
   return typeof value === "string" ? value : undefined;
 }
 
+const DEV_LOGIN_ROLES = ["user", "admin", "educator", "tutor", "student"] as const;
+type DevLoginRole = (typeof DEV_LOGIN_ROLES)[number];
+
 export function registerOAuthRoutes(app: Express) {
+  // Local-dev-only bypass for the Manus OAuth flow, which requires
+  // OAUTH_SERVER_URL / VITE_OAUTH_PORTAL_URL that only exist in the hosted
+  // Manus environment. Disabled in production.
+  if (process.env.NODE_ENV !== "production") {
+    app.get("/api/dev-login", async (req: Request, res: Response) => {
+      const roleParam = getQueryParam(req, "role") ?? "educator";
+      const role: DevLoginRole = (DEV_LOGIN_ROLES as readonly string[]).includes(roleParam)
+        ? (roleParam as DevLoginRole)
+        : "educator";
+      const openId = `dev_${role}`;
+      const name = `Dev ${role[0].toUpperCase()}${role.slice(1)}`;
+
+      await db.upsertUser({
+        openId,
+        name,
+        email: `${openId}@example.local`,
+        loginMethod: "dev-bypass",
+        role,
+        lastSignedIn: new Date(),
+      });
+
+      const sessionToken = await sdk.createSessionToken(openId, {
+        name,
+        expiresInMs: ONE_YEAR_MS,
+      });
+
+      const cookieOptions = getSessionCookieOptions(req);
+      res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+      res.redirect(302, "/");
+    });
+  }
+
   app.get("/api/oauth/callback", async (req: Request, res: Response) => {
     const code = getQueryParam(req, "code");
     const state = getQueryParam(req, "state");

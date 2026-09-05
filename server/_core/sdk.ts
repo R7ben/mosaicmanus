@@ -170,7 +170,9 @@ class SDKServer {
     return this.signSession(
       {
         openId,
-        appId: ENV.appId,
+        // VITE_APP_ID is only set in the hosted Manus environment; without it
+        // verifySession's non-empty-string check would reject every session.
+        appId: ENV.appId || "local-dev",
         name: options.name || "",
       },
       options

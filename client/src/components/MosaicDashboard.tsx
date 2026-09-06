@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation } from "wouter";
 import { BarChart3, BellRing, BookOpenCheck, ChevronRight, CircleHelp, Copy, Download, Grid2X2, Lightbulb, LogOut, Plus, Printer, Radio, RefreshCw, ScanLine, Search, SlidersHorizontal, Sparkles, UsersRound, Wifi, X, Zap } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -118,7 +119,12 @@ function GroupCards({ learners }: { learners: Learner[] }) {
 }
 
 export default function MosaicDashboard() {
-  const [view, setView] = useState("overview");
+  // /teacher/analytics and /teacher/students are real routes (see App.tsx)
+  // so deep-linking or refreshing on them works instead of falling through
+  // to the router's catch-all login page. They render this same dashboard
+  // with the matching tab pre-selected.
+  const [location] = useLocation();
+  const [view, setView] = useState(() => location === "/teacher/analytics" ? "heatmap" : location === "/teacher/students" ? "cohort" : "overview");
   const [paletteOpen, setPaletteOpen] = useState(false);
   useCommandPaletteShortcut(setPaletteOpen);
   // Above-the-fold summary cards animate in on mount; the recent-activity

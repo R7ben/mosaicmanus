@@ -54,6 +54,9 @@ function Router() {
   return <><SessionRedirector /><Switch>
     <Route path="/" component={LoginLandingPage} />
     <Route path="/teacher" component={MosaicDashboard} />
+    <Route path="/teacher/analytics" component={MosaicDashboard} />
+    <Route path="/teacher/students" component={MosaicDashboard} />
+    <Route path="/teacher/settings" component={ClassDetailsPage} />
     <Route path="/educator"><Redirect to="/teacher" /></Route>
     <Route path="/teacher/quiz/create" component={CreateQuizPage} />
     <Route path="/teacher/quiz" component={QuizHubPage} />

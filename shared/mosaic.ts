@@ -51,9 +51,12 @@ export interface PulseOption {
 
 export interface PulseQuestion {
   id: string;
+  title: string;
+  topic: string;
   prompt: string;
   options: PulseOption[];
   answer: string;
+  misconception?: string;
 }
 
 export const CLASSROOM = {
@@ -88,9 +91,31 @@ export const DEMO_LEARNERS: Learner[] = [
 ];
 
 export const PULSE_QUESTIONS: PulseQuestion[] = [
-  { id: "p1", prompt: "Which statement best describes mass?", options: [{ label: "A", value: "A push or pull" }, { label: "B", value: "The amount of matter in an object" }, { label: "C", value: "The pull of gravity on an object" }, { label: "D", value: "How fast an object moves" }], answer: "B" },
-  { id: "p2", prompt: "An object has the same mass on Earth and on the Moon. What changes?", options: [{ label: "A", value: "Its mass" }, { label: "B", value: "Its weight" }, { label: "C", value: "Its volume" }, { label: "D", value: "Its material" }], answer: "B" },
-  { id: "p3", prompt: "What tool is best for measuring weight?", options: [{ label: "A", value: "Spring balance" }, { label: "B", value: "Ruler" }, { label: "C", value: "Thermometer" }, { label: "D", value: "Stopwatch" }], answer: "A" },
+  {
+    id: "p1",
+    title: "What is mass, really?",
+    topic: "Forces & Motion",
+    prompt: "Which statement best describes mass?",
+    options: [{ label: "A", value: "A push or pull" }, { label: "B", value: "The amount of matter in an object" }, { label: "C", value: "The pull of gravity on an object" }, { label: "D", value: "How fast an object moves" }],
+    answer: "B",
+  },
+  {
+    id: "p2",
+    title: "Mass vs. weight: Earth to Moon",
+    topic: "Forces & Motion",
+    prompt: "An astronaut's mass is 70 kg on Earth. On the Moon, gravity is about 1/6th as strong. What happens to the astronaut's mass and weight?",
+    options: [{ label: "A", value: "Both mass and weight stay the same" }, { label: "B", value: "Mass stays the same; weight decreases" }, { label: "C", value: "Mass decreases; weight stays the same" }, { label: "D", value: "Both mass and weight decrease equally" }],
+    answer: "B",
+    misconception: "Mass and weight are the same thing",
+  },
+  {
+    id: "p3",
+    title: "Choosing the right measuring tool",
+    topic: "Forces & Motion",
+    prompt: "A student wants to measure how strongly gravity is pulling on a rock. Which tool should they use?",
+    options: [{ label: "A", value: "Spring balance" }, { label: "B", value: "Ruler" }, { label: "C", value: "Thermometer" }, { label: "D", value: "Stopwatch" }],
+    answer: "A",
+  },
 ];
 
 export const tierMeta: Record<Tier, { label: string; color: string; soft: string; task: string }> = {

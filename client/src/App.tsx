@@ -12,6 +12,7 @@ import RoadmapPage from "./pages/RoadmapPage";
 import RoleLoginPage from "./pages/RoleLoginPage";
 import StudentAnalytics from "./pages/StudentAnalytics";
 import StudentDashboard from "./pages/StudentDashboard";
+import StudentPracticePage from "./pages/StudentPracticePage";
 import TutorPerksPage from "./pages/TutorPerksPage";
 import EducatorWorkspacePage from "./pages/EducatorWorkspacePage";
 import CreateQuizPage from "./pages/CreateQuizPage";
@@ -50,6 +51,7 @@ function Router() {
     <Route path="/student/analytics" component={StudentAnalytics} />
     <Route path="/student/review" component={StudentQuizReview} />
     <Route path="/student/quiz" component={QuizHubPage} />
+    <Route path="/student/practice" component={StudentPracticePage} />
     <Route path="/kiosk" component={KioskExperience} />
     <Route path="/join/:code" component={LiveJoinPage} />
     <Route path="/roadmap" component={RoadmapPage} />

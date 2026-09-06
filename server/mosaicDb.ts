@@ -1,6 +1,6 @@
 import { and, asc, desc, eq } from "drizzle-orm";
 import { answers, chapters, classroomAccess, classrooms, learners, milestones, misconceptions, notifications, peerTutoringSessions, pulseSessions, quizzes, teacherQuestions, tutorPerks } from "../drizzle/schema";
-import { CLASSROOM, DEMO_LEARNERS, type AnswerInsight, type Learner, type PulseQuestion } from "../shared/mosaic";
+import { CLASSROOM, DEMO_LEARNERS, PULSE_QUESTIONS, type AnswerInsight, type Learner, type PulseQuestion } from "../shared/mosaic";
 import { getDb } from "./db";
 
 type ClassroomRow = typeof classrooms.$inferSelect;
@@ -251,15 +251,21 @@ export async function getStudentQuizReview(externalId: string) {
   const classroomState = await getClassroomRow();
   const classroom = classroomState.classroom;
   const answers = profile?.answers ?? [];
-  const topicForQuestion = (questionId: string) => questionId.toLowerCase().includes("living") || questionId === "q2" ? "Living Things" : questionId.toLowerCase().includes("matter") || questionId === "q3" ? "Matter & Properties" : "Forces & Motion";
-  const questionText = (questionId: string) => ({ q1: "Which statement best describes mass?", q2: "What changes between Earth and the Moon?", q3: "What tool measures weight?" } as Record<string, string>)[questionId] ?? "Question from your learning mission";
+  // PULSE_QUESTIONS ("p1"/"p2"/"p3") are the ids actually persisted for the
+  // practice flow — the old lookup here used "q1"/"q2"/"q3" keys that never
+  // matched anything, so every answer fell through to a generic placeholder.
+  const pulseQuestionById = new Map(PULSE_QUESTIONS.map((question) => [question.id, question]));
+  const topicForQuestion = (questionId: string) => pulseQuestionById.get(questionId)?.topic ?? "Forces & Motion";
+  const questionText = (questionId: string) => pulseQuestionById.get(questionId)?.title ?? "Practice question";
+  const correctOptionFor = (questionId: string) => pulseQuestionById.get(questionId)?.answer ?? "B";
+  const misconceptionFor = (questionId: string) => pulseQuestionById.get(questionId)?.misconception ?? "Mass and weight are the same thing";
   const grouped = new Map<string, typeof answers>();
   answers.forEach((answer) => { const topic = topicForQuestion(answer.questionId); grouped.set(topic, [...(grouped.get(topic) ?? []), answer]); });
   const topics = (classroom ? parseJson(classroom.topics, CLASSROOM.topics) : CLASSROOM.topics);
   const topicReviews = topics.map((topic) => {
     const topicAnswers = grouped.get(topic) ?? [];
     const correct = topicAnswers.filter((answer) => answer.correct).length;
-    return { topic, totalQuestions: topicAnswers.length, accuracy: topicAnswers.length ? Math.round((correct / topicAnswers.length) * 100) : 0, mostCommonError: topicAnswers.find((answer) => !answer.correct)?.teacherOverrideMisconceptionId ?? null, questionsToRevisit: topicAnswers.filter((answer) => !answer.correct).length, sessions: topicAnswers.map((answer) => ({ id: String(answer.id), answeredAt: answer.createdAt, score: answer.correct ? 1 : 0, question: { id: answer.questionId, text: questionText(answer.questionId), selectedOption: answer.option, correct: answer.correct, correctOption: answer.questionId === "q1" ? "B" : answer.questionId === "q2" ? "C" : "B", confidence: answer.confidence, misconception: answer.correct ? null : answer.teacherOverrideMisconceptionId ?? "Mass and weight are the same thing" } })) };
+    return { topic, totalQuestions: topicAnswers.length, accuracy: topicAnswers.length ? Math.round((correct / topicAnswers.length) * 100) : 0, mostCommonError: topicAnswers.find((answer) => !answer.correct)?.teacherOverrideMisconceptionId ?? null, questionsToRevisit: topicAnswers.filter((answer) => !answer.correct).length, sessions: topicAnswers.map((answer) => ({ id: String(answer.id), answeredAt: answer.createdAt, score: answer.correct ? 1 : 0, question: { id: answer.questionId, text: questionText(answer.questionId), selectedOption: answer.option, correct: answer.correct, correctOption: correctOptionFor(answer.questionId), confidence: answer.confidence, misconception: answer.correct ? null : answer.teacherOverrideMisconceptionId ?? misconceptionFor(answer.questionId) } })) };
   });
   const revisitQueue = topicReviews.flatMap((review) => review.sessions.filter((session) => !session.question.correct).map((session) => ({ ...session, topic: review.topic }))).slice(0, 5);
   return { classroom: classroom ? { name: classroom.name, subject: classroom.subject } : { name: CLASSROOM.name, subject: CLASSROOM.subject }, topics: topicReviews, revisitQueue, hasHistory: answers.length > 0 };

@@ -5,6 +5,7 @@ export type OfflineAnswer = {
   learnerId: string;
   option: string;
   confidence: "guessed" | "unsure" | "knew";
+  questionId: string;
   createdAt: string;
 };
 

@@ -108,7 +108,7 @@ export default function CreateQuizModal({ classroomName, subject, topics, onClos
                 placeholder="Type your question here. E.g. What is the unit of force?"
               />
               {questionTooShort && (
-                <span className="field-error" style={{ color: "var(--color-error, #c0392b)", fontSize: "0.8rem", marginTop: "4px", display: "block" }}>
+                <span className="field-error" style={{ color: "var(--color-error, #ff6f5e)", fontSize: "0.8rem", marginTop: "4px", display: "block" }}>
                   Question must be at least 10 characters.
                 </span>
               )}
@@ -127,7 +127,7 @@ export default function CreateQuizModal({ classroomName, subject, topics, onClos
                 </div>
               ))}
               {emptyOptions_.length > 0 && questionText.trim().length >= 10 && (
-                <span style={{ color: "var(--color-error, #c0392b)", fontSize: "0.8rem", marginTop: "4px", display: "block" }}>
+                <span style={{ color: "var(--color-error, #ff6f5e)", fontSize: "0.8rem", marginTop: "4px", display: "block" }}>
                   Please fill in all answer options ({emptyOptions_.join(", ")}).
                 </span>
               )}
@@ -176,13 +176,13 @@ export default function CreateQuizModal({ classroomName, subject, topics, onClos
             )}
 
             {createQuestion.isError && (
-              <p style={{ color: "var(--color-error, #c0392b)", fontSize: "0.85rem", marginTop: "8px" }}>
+              <p style={{ color: "var(--color-error, #ff6f5e)", fontSize: "0.85rem", marginTop: "8px" }}>
                 Failed to save question. Please try again.
               </p>
             )}
 
             {createQuestion.isSuccess && addAnother && (
-              <p style={{ color: "var(--color-success, #27ae60)", fontSize: "0.85rem", marginTop: "8px" }}>
+              <p style={{ color: "var(--color-success, #2ed9a6)", fontSize: "0.85rem", marginTop: "8px" }}>
                 ✓ Question saved! You can add another below.
               </p>
             )}

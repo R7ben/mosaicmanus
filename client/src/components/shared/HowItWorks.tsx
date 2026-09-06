@@ -1,6 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, ChevronDown, CircleHelp, Sparkles, X } from "lucide-react";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "@/lib/gsapSetup";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import TutorialSlide from "./TutorialSlide";
 
@@ -59,6 +61,7 @@ function generalSlides(): Slide[] { return [
 
 export default function HowItWorks({ role, isOpen, onClose }: { role: TutorialRole; isOpen: boolean; onClose: () => void }) {
   const [activeRole, setActiveRole] = useState<TutorialRole>(role);
+  const toggleRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(isOpen);
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -71,5 +74,22 @@ export default function HowItWorks({ role, isOpen, onClose }: { role: TutorialRo
   const next = () => { if (step < slides.length - 1) { setDirection(1); setStep((value) => value + 1); } };
   const previous = () => { if (step > 0) { setDirection(-1); setStep((value) => value - 1); } };
   const changeRole = (nextRole: "teacher" | "student") => { setActiveRole(nextRole); setStep(0); setDirection(1); };
-  return <Dialog open={open} onOpenChange={(value) => value ? setOpen(true) : close()}><DialogContent className="how-it-works-dialog"><DialogTitle className="sr-only">How Mosaic Classroom works</DialogTitle><div className="tutorial-header"><div><div className="eyebrow"><CircleHelp size={14} />How it works</div><div className="tutorial-role-toggle"><button className={activeRole === "teacher" ? "active" : ""} onClick={() => changeRole("teacher")}>View as Teacher</button><button className={activeRole === "student" ? "active" : ""} onClick={() => changeRole("student")}>View as Student</button></div></div><button className="tutorial-skip" onClick={close}>Skip tutorial <X size={13} /></button></div><div className="tutorial-progress"><i style={{ width: `${((step + 1) / slides.length) * 100}%` }} /></div><div className="tutorial-count">Step {step + 1} of {slides.length}</div><div className="tutorial-stage"><AnimatePresence initial={false} custom={direction} mode="wait"><motion.div key={`${activeRole}-${step}`} custom={direction} initial={{ opacity: 0, x: direction * 38 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction * -38 }} transition={{ duration: .22 }}><TutorialSlide illustration={slides[step].art} title={slides[step].title} body={slides[step].body} tip={slides[step].tip} /></motion.div></AnimatePresence></div><div className="tutorial-footer"><button className="tutorial-nav" onClick={previous} disabled={step === 0} aria-label="Previous slide"><ArrowLeft size={17} /></button><span>{activeRole === "teacher" ? "Teacher path" : "Student path"}</span>{step === slides.length - 1 ? <button className="btn btn--student tutorial-done" onClick={close}>{activeRole === "teacher" ? "Open my dashboard" : "Start my mission"} <ArrowRight size={16} /></button> : <button className="tutorial-nav" onClick={next} aria-label="Next slide"><ArrowRight size={17} /></button>}</div></DialogContent></Dialog>;
+
+  useGSAP(
+    () => {
+      const container = toggleRef.current;
+      const pill = container?.querySelector<HTMLElement>(".tutorial-role-toggle__pill");
+      const active = container?.querySelector<HTMLElement>("button.active");
+      if (!container || !pill || !active) return;
+      const target = { x: active.offsetLeft - 3, width: active.offsetWidth };
+      const mm = gsap.matchMedia();
+      mm.add("(prefers-reduced-motion: reduce)", () => gsap.set(pill, target));
+      mm.add("(prefers-reduced-motion: no-preference)", () =>
+        gsap.to(pill, { ...target, duration: 0.3, ease: "power2.out" }),
+      );
+      return () => mm.revert();
+    },
+    { scope: toggleRef, dependencies: [activeRole] },
+  );
+  return <Dialog open={open} onOpenChange={(value) => value ? setOpen(true) : close()}><DialogContent className="how-it-works-dialog"><DialogTitle className="sr-only">How Mosaic Classroom works</DialogTitle><div className="tutorial-header"><div><div className="eyebrow"><CircleHelp size={14} />How it works</div><div className="tutorial-role-toggle" ref={toggleRef}><span className="tutorial-role-toggle__pill" aria-hidden="true" /><button className={activeRole === "teacher" ? "active" : ""} onClick={() => changeRole("teacher")}>View as Teacher</button><button className={activeRole === "student" ? "active" : ""} onClick={() => changeRole("student")}>View as Student</button></div></div><button className="tutorial-skip" onClick={close}>Skip tutorial <X size={13} /></button></div><div className="tutorial-progress"><i style={{ width: `${((step + 1) / slides.length) * 100}%` }} /></div><div className="tutorial-count">Step {step + 1} of {slides.length}</div><div className="tutorial-stage"><AnimatePresence initial={false} custom={direction} mode="wait"><motion.div key={`${activeRole}-${step}`} custom={direction} initial={{ opacity: 0, x: direction * 38 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction * -38 }} transition={{ duration: .22 }}><TutorialSlide illustration={slides[step].art} title={slides[step].title} body={slides[step].body} tip={slides[step].tip} /></motion.div></AnimatePresence></div><div className="tutorial-footer"><button className="tutorial-nav" onClick={previous} disabled={step === 0} aria-label="Previous slide"><ArrowLeft size={17} /></button><span>{activeRole === "teacher" ? "Teacher path" : "Student path"}</span>{step === slides.length - 1 ? <button className="btn btn--student tutorial-done" onClick={close}>{activeRole === "teacher" ? "Open my dashboard" : "Start my mission"} <ArrowRight size={16} /></button> : <button className="tutorial-nav" onClick={next} aria-label="Next slide"><ArrowRight size={17} /></button>}</div></DialogContent></Dialog>;
 }

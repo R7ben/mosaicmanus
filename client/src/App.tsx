@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Route, Switch, useLocation } from "wouter";
+import { Redirect, Route, Switch, useLocation } from "wouter";
 import { useAuth } from "./_core/hooks/useAuth";
 import ErrorBoundary from "./components/ErrorBoundary";
 import KioskExperience from "./components/KioskExperience";
@@ -14,12 +14,27 @@ import StudentAnalytics from "./pages/StudentAnalytics";
 import StudentDashboard from "./pages/StudentDashboard";
 import StudentPracticePage from "./pages/StudentPracticePage";
 import TutorPerksPage from "./pages/TutorPerksPage";
-import EducatorWorkspacePage from "./pages/EducatorWorkspacePage";
 import CreateQuizPage from "./pages/CreateQuizPage";
 import StudentQuizReview from "./pages/StudentQuizReview";
 import QuizHubPage from "./pages/QuizHubPage";
 import ClassDetailsPage from "./pages/ClassDetailsPage";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { useGsapInteractions } from "./hooks/useGsapInteractions";
+
+function GsapInteractions() {
+  useGsapInteractions();
+  return null;
+}
+
+function AmbientBackground() {
+  return (
+    <div className="mosaic-ambient" aria-hidden="true">
+      <div className="mosaic-ambient__blob mosaic-ambient__blob--coral" />
+      <div className="mosaic-ambient__blob mosaic-ambient__blob--sky" />
+      <div className="mosaic-ambient__blob mosaic-ambient__blob--mint" />
+    </div>
+  );
+}
 
 function SessionRedirector() {
   const auth = useAuth();
@@ -39,13 +54,13 @@ function Router() {
   return <><SessionRedirector /><Switch>
     <Route path="/" component={LoginLandingPage} />
     <Route path="/teacher" component={MosaicDashboard} />
-    <Route path="/educator" component={EducatorWorkspacePage} />
+    <Route path="/educator"><Redirect to="/teacher" /></Route>
     <Route path="/teacher/quiz/create" component={CreateQuizPage} />
     <Route path="/teacher/quiz" component={QuizHubPage} />
     <Route path="/teacher/class" component={ClassDetailsPage} />
-    <Route path="/login/educator"><RoleLoginPage role="educator" /></Route>
+    <Route path="/login/educator"><Redirect to="/" /></Route>
+    <Route path="/login/student"><Redirect to="/" /></Route>
     <Route path="/login/tutor"><RoleLoginPage role="tutor" /></Route>
-    <Route path="/login/student"><RoleLoginPage role="student" /></Route>
     <Route path="/tutor/perks" component={TutorPerksPage} />
     <Route path="/student" component={StudentDashboard} />
     <Route path="/student/analytics" component={StudentAnalytics} />
@@ -60,5 +75,5 @@ function Router() {
 }
 
 export default function App() {
-  return <ErrorBoundary><ThemeProvider defaultTheme="light"><TooltipProvider><Toaster /><Router /></TooltipProvider></ThemeProvider></ErrorBoundary>;
+  return <ErrorBoundary><ThemeProvider defaultTheme="light"><TooltipProvider><GsapInteractions /><AmbientBackground /><Toaster /><Router /></TooltipProvider></ThemeProvider></ErrorBoundary>;
 }

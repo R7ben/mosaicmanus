@@ -21,7 +21,7 @@ export default function PolicyModal({ title, content, isOpen, onClose }: Props) 
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="border-[#e8e2d8] bg-[#fffdf8] text-[#24322d] shadow-[0_24px_80px_rgba(36,50,45,0.2)] sm:max-w-lg">
+      <DialogContent className="border-[#ece3d3] bg-[#ffffff] text-[#1f3350] shadow-[0_24px_80px_rgba(31, 51, 80, 0.2)] sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-bold">{title}</DialogTitle>
         </DialogHeader>

@@ -119,8 +119,8 @@ export const PULSE_QUESTIONS: PulseQuestion[] = [
 ];
 
 export const tierMeta: Record<Tier, { label: string; color: string; soft: string; task: string }> = {
-  red: { label: "Rebuild", color: "#d6544c", soft: "#fff0ed", task: "Rebuild the core concept with concrete examples and a teacher check-in." },
-  yellow: { label: "Repair", color: "#d89b25", soft: "#fff7e4", task: "Use a paired sort-and-explain task to repair the misconception." },
-  green: { label: "Practice", color: "#4f9a78", soft: "#ecf8f1", task: "Apply the concept independently with quick feedback." },
-  blue: { label: "Extend", color: "#536fc9", soft: "#eef1ff", task: "Explain the concept in a fresh real-world context for a peer." },
+  red: { label: "Rebuild", color: "#ff6f5e", soft: "#fff1ef", task: "Rebuild the core concept with concrete examples and a teacher check-in." },
+  yellow: { label: "Repair", color: "#ffb648", soft: "#fff6e9", task: "Use a paired sort-and-explain task to repair the misconception." },
+  green: { label: "Practice", color: "#2ed9a6", soft: "#eafbf6", task: "Apply the concept independently with quick feedback." },
+  blue: { label: "Extend", color: "#1e90ff", soft: "#e9f4ff", task: "Explain the concept in a fresh real-world context for a peer." },
 };

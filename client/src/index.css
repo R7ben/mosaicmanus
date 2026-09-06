@@ -26,7 +26,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .mosaic-sidebar { width: 255px; flex: 0 0 auto; padding: 27px 18px 21px; border-right: 1px solid var(--line); background: #f0ede6; display: flex; flex-direction: column; }
 .brand { display: inline-flex; align-items: center; gap: 9px; font-weight: 800; letter-spacing: -0.045em; font-size: 19px; line-height: .95; }
 .brand > span:last-child > span { display: block; font-weight: 500; color: var(--moss); margin-left: 17px; }
-.mosaic-mark { display: inline-grid; place-items: center; width: 31px; height: 31px; flex: 0 0 auto; border-radius: 9px; color: #fffdf8; background: var(--moss); font-family: "Fraunces", serif; font-weight: 700; font-size: 20px; box-shadow: inset 0 -5px 0 rgba(0,0,0,.09); }
+.mosaic-mark { display: inline-block; width: 31px; height: 31px; flex: 0 0 auto; border-radius: 9px; object-fit: cover; }
 .side-class { display: flex; gap: 10px; align-items: center; margin: 43px 4px 24px; padding: 11px; border: 1px solid #ded8ce; border-radius: 14px; background: rgba(255,253,248,.5); }
 .side-class__round { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #dce8dd; color: var(--moss); font-size: 12px; font-weight: 800; }
 .side-class small, .teacher-mini small { display: block; color: var(--muted-ink); font-size: 10px; letter-spacing: .025em; }.side-class b { font-size: 12px; }
